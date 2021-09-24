@@ -3,12 +3,12 @@ update epub files metadata
 
 ## Usage example 
 
-``sh
+```sh
 ./epub-upater.py --verbosity
     -f=~/test*.epub
     -a="some author"
     -b
-``
+```
 
 ## Arguments
 
