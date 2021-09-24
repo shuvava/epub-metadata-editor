@@ -158,7 +158,7 @@ def get_files(p: str) -> List:
     return list(Path(p.parent).glob(p.name))
 
 
-if __name__ == '__main__':
+def main():
     args = get_args()
     logger = config_logger(args.verbosity)
     for file in get_files(args.files):
@@ -182,3 +182,7 @@ if __name__ == '__main__':
                 copyfile(str(file), str(bfile))
             book.update()
     logger.info('done')
+
+
+if __name__ == '__main__':
+    main()
