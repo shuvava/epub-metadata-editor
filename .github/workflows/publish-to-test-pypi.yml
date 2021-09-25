@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - v*
+  release:
+    types: [published, created]
 jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
