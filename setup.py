@@ -22,6 +22,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
-        "License :: GPL-3.0 License",
+        "Development Status :: 4 - Beta",  # https://pypi.org/classifiers/
+        "Environment :: Console",
+        "License :: OSI Approved :: GNU Affero General Public License v3",
     ],
 )
