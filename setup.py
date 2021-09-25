@@ -20,6 +20,7 @@ setup(
     license="GPL-3.0",
     keywords="epub editor",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
         "License :: GPL-3.0 License",
     ],
