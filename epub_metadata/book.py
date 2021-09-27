@@ -5,18 +5,25 @@ import zipfile
 from typing import Optional, List
 
 from lxml import etree
-from .reader import get_book_metadata
+from .file import read_epub_metadata
+from .epub import (
+    find_metadata_items,
+    get_metadata_main, get_metadata_ext,
+    get_metadata_node,
+    get_book_sequence,
+)
 
 
 class Book:
     def __init__(self, fname: str, log: logging.Logger):
         self._file = fname
         self._log = log
-        self._tree = get_book_metadata(fname)
+        self._tree = read_epub_metadata(fname)
         self._metadata = None
-        for el in self._tree:
-            if 'metadata' in el.tag:
-                self._metadata = el
+        self._metadata = get_metadata_node(self._tree)
+        series, num = get_book_sequence(self._tree, self._metadata)
+        self._series = series
+        self._series_num = num
         for el in self._metadata:
             if 'title' in el.tag:
                 self._title = el
@@ -28,7 +35,7 @@ class Book:
                 self._identifier = el
 
     @property
-    def title(self):
+    def title(self) -> str:
         return self._title.text
 
     @title.setter
@@ -36,29 +43,29 @@ class Book:
         self._title.text = title
 
     @property
-    def creator(self):
+    def creator(self) -> str:
         return self._creator.text
 
     @creator.setter
     def creator(self, title):
         self._creator.text = title
 
+    @property
+    def series(self) -> str:
+        return self._series
+
+    @property
+    def series_num(self) -> int:
+        return self._series_num
+
     def get_metadata(self, key: str, ns: str = None) -> List:
-        if ns not in self._tree.nsmap:
-            return []
-        fkey = f'{{{self._tree.nsmap[ns]}}}{key}'
-        return [el for el in self._metadata if fkey == el.tag]
+        return find_metadata_items(self._tree, self._metadata, key, ns)
 
     def get_dc(self, key: str) -> Optional[str]:
-        els = self.get_metadata(key, 'dc')
-        el = els
-        return el[0].text if len(el) > 0 else None
+        return get_metadata_main(self._tree, self._metadata, key)
 
-    def get_meta(self, key: str):
-        els = self.get_metadata('meta', None)
-        for el in els:
-            if key == el.attrib['name']:
-                return el.attrib['content']
+    def get_meta(self, key: str) -> Optional[str]:
+        return get_metadata_ext(self._tree, self._metadata, key)
 
     def update(self):
         self._log.debug(f'file "{self._file}" updating')

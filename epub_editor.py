@@ -84,6 +84,7 @@ def main():
         logger.debug(f' DC:language {book.get_dc("language")}')
         logger.debug(f' DC:identifier {book.get_dc("identifier")}')
         logger.debug(f' FB2.publish-info.year {book.get_meta("FB2.publish-info.year")}')
+        logger.debug(f' series {book.series}:{book.series_num}')
         updated = False
         if args.author != '':
             updated = True
