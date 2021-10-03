@@ -15,6 +15,7 @@ setup(
     },
     install_requires=[
         'lxml',
+        'transliterate',
     ],
     version="0.0.1",
     url="https://github.com/shuvava/epub-metadata-editor",
@@ -24,8 +25,11 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
+        "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",  # https://pypi.org/classifiers/
         "Environment :: Console",
         "License :: OSI Approved :: GNU Affero General Public License v3",
+        "Intended Audience :: Developers",
+        "Operating System :: OS Independent",
     ],
 )

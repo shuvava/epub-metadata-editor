@@ -1,1 +1,2 @@
 lxml~=4.6.3
+transliterate~=1.10.2

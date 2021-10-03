@@ -10,7 +10,7 @@ from .epub import (
     find_metadata_items,
     get_metadata_main, get_metadata_ext,
     get_metadata_node,
-    get_book_sequence,
+    get_book_sequence, set_book_sequence,
 )
 
 
@@ -35,11 +35,15 @@ class Book:
                 self._identifier = el
 
     @property
+    def language(self) -> str:
+        return self._language.text
+
+    @property
     def title(self) -> str:
         return self._title.text
 
     @title.setter
-    def title(self, title):
+    def title(self, title: str):
         self._title.text = title
 
     @property
@@ -47,16 +51,26 @@ class Book:
         return self._creator.text
 
     @creator.setter
-    def creator(self, title):
-        self._creator.text = title
+    def creator(self, creator: str):
+        self._creator.text = creator
 
     @property
     def series(self) -> str:
         return self._series
 
+    @series.setter
+    def series(self, s: str) -> None:
+        self._series = s
+        set_book_sequence(self._tree, self._metadata, self._series, self._series_num)
+
     @property
     def series_num(self) -> int:
         return self._series_num
+
+    @series_num.setter
+    def series_num(self, n: int) -> None:
+        self._series_num = n
+        set_book_sequence(self._tree, self._metadata, self._series, self._series_num)
 
     def get_metadata(self, key: str, ns: str = None) -> List:
         return find_metadata_items(self._tree, self._metadata, key, ns)
@@ -69,6 +83,7 @@ class Book:
 
     def update(self):
         self._log.debug(f'file "{self._file}" updating')
+        # create tmp file
         tmpfd, tmpname = tempfile.mkstemp(dir=os.path.dirname(self._file))
         os.close(tmpfd)
         with zipfile.ZipFile(self._file, 'r') as zin:
@@ -78,7 +93,8 @@ class Book:
                     content = zin.read(item.filename)
                     if 'content.opf' in item.filename:
                         content = etree.tostring(self._tree,
-                                                 pretty_print=True, encoding='utf-8', xml_declaration=False,
+                                                 method='xml', pretty_print=True,
+                                                 encoding='utf-8', xml_declaration=False,
                                                  doctype='<?xml version="1.0" encoding="UTF-8"?>')
                     zout.writestr(item, content)
         # replace with the temp archive
