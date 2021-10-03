@@ -17,7 +17,7 @@ setup(
         'lxml',
         'transliterate',
     ],
-    version="0.0.2",
+    version="0.0.3",
     url="https://github.com/shuvava/epub-metadata-editor",
     description="EPUB files metadata editor",
     license="GPL-3.0",
