@@ -41,10 +41,16 @@ def get_args() -> argparse.Namespace:
         '-t', '--title',
         help='set title metadata "--title=\'Some title\'"',
         nargs='?', type=str)
+    parser.add_argument('-s', '--series', help='set series metadata', nargs='?', type=str)
+    parser.add_argument(
+        '-n', '--num', help='set series number metadata', nargs='?', type=int, default=-1
+    )
     parser.add_argument(
         '-r', '--rename',
         help='rename file name to book-series_book-series-num.epub',
         nargs='?', const=1, type=bool, default=False)
+    parser.add_argument('--auto-series', metavar='auto_series', help='auto-generate series metadata from file name',
+                        nargs='?', const=1, type=bool, default=False)
 
     return parser.parse_args()
 
@@ -74,14 +80,16 @@ def config_logger(verbose: bool) -> logging.Logger:
 
 
 def get_files(p: str) -> List:
-    """look up files available for provided path"""
+    """look up files available for a provided path"""
     p = Path(p).expanduser()
-    return list(Path(p.parent).glob(p.name))
+    files = list(Path(p.parent).glob(p.name))
+    return sorted(files, key=lambda f: f.name)
 
 
 def main():
     args = get_args()
     logger = config_logger(args.verbosity)
+    cnt = 1
     for file in get_files(args.files):
         logger.debug(f'file({str(file)})')
         book = Book(file, logger)
@@ -98,6 +106,16 @@ def main():
         if args.title is not None:
             updated = True
             book.title = args.title
+        if args.series is not None:
+            updated = True
+            book.series = args.series
+        if args.num >= 0:
+            updated = True
+            book.series_num = args.num
+        if args.auto_series:
+            updated = True
+            book.title = f'{book.title}  {cnt:02d}'
+            book.series_num = cnt
         if updated:
             if args.backup:
                 bfile = Path(file.parent, f'{file.name}.bak')
@@ -113,6 +131,7 @@ def main():
                     new_fname = f'{btitile}_{book.series_num}.epub'
                     bfile = Path(file.parent, new_fname)
                     move(str(file), str(bfile))
+        cnt += 1
     logger.info('done')
 
 

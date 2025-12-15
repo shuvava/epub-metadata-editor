@@ -100,6 +100,7 @@ class Book:
         # replace with the temp archive
         os.remove(self._file)
         os.rename(tmpname, self._file)
+        self._log.info(f'file "{self._file}" updated')
 
     def __repr__(self):
         return f"<Book(creator='{self.creator}', title='{self.title}')>"
